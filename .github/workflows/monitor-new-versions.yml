@@ -53,10 +53,12 @@ jobs:
     - name: Git add version.txt
       run: git add version.txt
     - name: Git commit
-      run: git commit -m "Relese new version ${{ env.VERSION_NUMBER }}"
+      run: git commit -m "Release new version ${{ env.VERSION_NUMBER }}"
     - name: Tag commit
       run: git tag ${{ env.VERSION_NUMBER }}
     - name: Push
+      env:
+        GITHUB_TOKEN: ${{ secrets.PUSH_TOKEN }}
       run: |
         git push
         git push origin ${{ env.VERSION_NUMBER }}
