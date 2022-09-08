@@ -1,6 +1,6 @@
 # This is a basic workflow that is manually triggered
 
-name: Manual workflow
+name: Download and release latest version of kubectl
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
@@ -12,7 +12,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "greet"
-  greet:
+  get-stable-version:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -20,14 +20,22 @@ jobs:
     steps:
     # Runs a single command using the runners shell
     - name: Get latest stable version of Kubernetes
-      run: echo "KUBECTL_VERSION=$(curl -L -s https://dl.k8s.io/release/stable.txt)" >> $GITHUB_ENV
+      run: |
+        curl -L -s -O https://dl.k8s.io/release/stable.txt
+        echo "KUBECTL_VERSION=$(cat stable.txt)" >> $GITHUB_ENV
       # run: echo "KUBECTL_VERSION=v1.24.10" >> $GITHUB_ENV
     - uses: github-actions-tools/gh-list-releases@main
       id: list-releases
-    - name: Print this repos releases
-      run: echo "${{ steps.list-releases.outputs.releases }}"
-    - name: Download kubectl
-      if: ${{ !contains(steps.list-releases.outputs.releases,env.KUBECTL_VERSION)  }}
+  
+  commit-new-version:
+    needs: get-stable-version
+    if: ${{ !contains(jobs.get-stable-version.steps.list-releases.outputs.releases,jobs.get-stable-version.env.KUBECTL_VERSION) }}
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    - name: Git add stable.txt
       run: echo "Version not released"
 #     - name: Automatic Releases
 #       # You may pin to the exact commit or the version.
