@@ -23,7 +23,7 @@ jobs:
     - uses: github-actions-tools/gh-list-releases@main
       id: list-releases
     - name: List tags
-      run: echo "TAGS=$(git ls-remote tag origin)" >> $GITHUB_ENV
+      run: echo "TAGS=$(git ls-remote --tags origin)" >> $GITHUB_ENV
     - name: Echo TAGS
       run: echo "${{ env.TAGS }}"
   
