@@ -1,0 +1,53 @@
+name: Monitor kubectl reposiyort for new versions
+
+on:
+  schedule:
+  - cron: "0 2 * * 1-5"
+  workflow_dispatch:
+
+jobs:
+  get-stable-version:
+    runs-on: ubuntu-latest
+    outputs:
+      latest: ${{ env.KUBECTL_VERSION }}
+      releases: ${{ steps.list-releases.outputs.releases }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.4.2
+    - name: Get latest stable version of Kubernetes
+      # run: |
+      #   curl -L -s -O https://dl.k8s.io/release/stable.txt
+      #   echo "KUBECTL_VERSION=$(cat stable.txt)" >> $GITHUB_ENV
+      run: echo "KUBECTL_VERSION=v1.24.10" >> $GITHUB_ENV
+    - uses: github-actions-tools/gh-list-releases@main
+      id: list-releases
+    - name: List tags
+      run: echo "TAGS=$(git ls-remote tag origin)" >> $GITHUB_ENV
+    - name: Echo TAGS
+      run: echo "${{ env.TAGS }}"
+  
+  commit-new-version:
+    needs: [get-stable-version]
+    if: ${{ !contains(needs.get-stable-version.outputs.releases,needs.get-stable-version.outputs.latest) }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.4.2
+    - name: Create version.txt
+      run: echo "${{ needs.get-stable-version.outputs.latest }}" > version.txt
+    - name: Set git credentials
+      run: |
+        git config user.email "${{ github.actor }}@github.com"
+        git config user.name "${{ github.actor }}"
+    - name: Git add version.txt
+      run: git add version.txt
+    - name: Git commit
+      run: git commit -m "Relese new version ${{ needs.get-stable-version.outputs.latest }}"
+    - name: Tag commit
+      run: git tag ${{ needs.get-stable-version.outputs.latest }}
+    - name: Push
+      run: |
+        git push
+        git push origin ${{ needs.get-stable-version.outputs.latest }}
