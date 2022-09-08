@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       latest: ${{ env.KUBECTL_VERSION }}
-      releases: ${{ steps.list-releases.outputs.releases }}
+      tags: ${{ env.TAGS }}
 
     steps:
     - name: Checkout
@@ -34,7 +34,7 @@ jobs:
   
   commit-new-version:
     needs: [get-stable-version]
-    if: ${{ !contains(needs.get-stable-version.outputs.releases,needs.get-stable-version.outputs.latest) }}
+    if: ${{ !contains(needs.get-stable-version.outputs.tags,needs.get-stable-version.outputs.latest) }}
     runs-on: ubuntu-latest
 
     steps:
