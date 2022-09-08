@@ -29,7 +29,11 @@ jobs:
       id: kubectl-version
       run: echo "KUBECTL_VERSION=$(kubectl version --client -o yaml | grep -Po "(?<=gitVersion..).*")" >> $GITHUB_ENV
     - name: Get kubectl version
-      run: echo "KUBECTL_VERSION2=$(kubectl version --client -o json)" >> $GITHUB_ENV
+#       run: echo "KUBECTL_VERSION2=$(kubectl version --client -o json)" >> $GITHUB_ENV
+      run: |
+        echo 'KUBECTL_VERSION2<<EOF' >> $GITHUB_ENV
+        kubectl version --client -o json >> $GITHUB_ENV
+        echo 'EOF' >> $GITHUB_ENV
     - name: Send greeting
       run: echo "Hello ${{ env.KUBECTL_VERSION }}"
     - name: Send greeting
