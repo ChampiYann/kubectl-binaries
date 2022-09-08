@@ -19,32 +19,23 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Runs a single command using the runners shell
-    - name: Kubectl tool installer
-      id: kubectl-get
-      uses: Azure/setup-kubectl@v3
-      with:
-        # Version of kubectl
-        version: latest
-    - name: Get kubectl version
-      run: |
-        echo 'KUBECTL_VERSION<<EOF' >> $GITHUB_ENV
-        kubectl version --client -o json >> $GITHUB_ENV
-        echo 'EOF' >> $GITHUB_ENV
-    - name: Send greeting
-      run: echo "Hello ${{ fromJSON(env.KUBECTL_VERSION).clientVersion.gitVersion }}"
-    - name: Automatic Releases
-      # You may pin to the exact commit or the version.
-      # uses: marvinpinto/action-automatic-releases@919008cf3f741b179569b7a6fb4d8860689ab7f0
-      uses: marvinpinto/action-automatic-releases@v1.2.1
-      with:
-        # GitHub secret token
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        automatic_release_tag: "latest"
-        # Should this release be marked as a draft?
-        draft: true
-        # Should this release be marked as a pre-release?
-        prerelease: true
-        # Release title (for automatic releases)
-        title: ${{ fromJSON(env.KUBECTL_VERSION).clientVersion.gitVersion }}
-        # Assets to upload to the release
-        files: ${{ steps.kubectl-get.outputs.kubectl-path }}
+    - name: Get latest stable version of Kubernetes
+      run: curl -L -s https://dl.k8s.io/release/stable.txt
+    - uses: github-actions-tools/gh-list-releases@main
+      id: list-releases
+#     - name: Automatic Releases
+#       # You may pin to the exact commit or the version.
+#       # uses: marvinpinto/action-automatic-releases@919008cf3f741b179569b7a6fb4d8860689ab7f0
+#       uses: marvinpinto/action-automatic-releases@v1.2.1
+#       with:
+#         # GitHub secret token
+#         repo_token: ${{ secrets.GITHUB_TOKEN }}
+#         automatic_release_tag: "latest"
+#         # Should this release be marked as a draft?
+#         draft: true
+#         # Should this release be marked as a pre-release?
+#         prerelease: true
+#         # Release title (for automatic releases)
+#         title: ${{ fromJSON(env.KUBECTL_VERSION).clientVersion.gitVersion }}
+#         # Assets to upload to the release
+#         files: ${{ steps.kubectl-get.outputs.kubectl-path }}
