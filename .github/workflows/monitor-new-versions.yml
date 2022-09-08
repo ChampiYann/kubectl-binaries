@@ -23,11 +23,12 @@ jobs:
     - uses: github-actions-tools/gh-list-releases@main
       id: list-releases
     - name: List tags
+      id: list-tags
       run: |
         git fetch --all --tags
-        echo "TAGS=$(git tag)" >> $GITHUB_ENV
+        echo "::set-output name=tags::$(git tag)"
     - name: Echo TAGS
-      run: echo "${{ env.TAGS }}"
+      run: echo "${{ steps.list-tags.outputs.tags }}"
   
   commit-new-version:
     needs: [get-stable-version]
