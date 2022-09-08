@@ -20,13 +20,16 @@ jobs:
     steps:
     # Runs a single command using the runners shell
     - name: Kubectl tool installer
-      id: kubectl
+      id: kubectl-get
       uses: Azure/setup-kubectl@v3
       with:
         # Version of kubectl
         version: latest
+    - name: Get kubectl version
+      id: kubectl-version
+      run: kubectl --version --short
     - name: Send greeting
-      run: echo "Hello ${{ steps.kubectl.outputs.kubectl-path }}"
+      run: echo "Hello ${{ steps.kubectl-version.outputs }}"
     - name: Automatic Releases
       # You may pin to the exact commit or the version.
       # uses: marvinpinto/action-automatic-releases@919008cf3f741b179569b7a6fb4d8860689ab7f0
