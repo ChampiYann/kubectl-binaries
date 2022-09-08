@@ -27,7 +27,7 @@ jobs:
         version: latest
     - name: Get kubectl version
       id: kubectl-version
-      run: kubectl --version --short
+      run: kubectl version --client --short
     - name: Send greeting
       run: echo "Hello ${{ steps.kubectl-version.outputs }}"
     - name: Automatic Releases
