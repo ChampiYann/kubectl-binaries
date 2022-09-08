@@ -41,8 +41,8 @@ jobs:
       run: echo "${{ needs.get-stable-version.outputs.latest }}" > latest.txt
     - name: Set git credentials
       run: |
-        git config user.email "${{ env.GITHUB_ACTOR }}"
-        git config user.name "${{ env.GITHUB_ACTOR }}"
+        git config user.email "${{ env.GITHUB_RUN_ID }}"
+        git config user.name "${{ env.GITHUB_RUN_ID }}"
     - name: Git add latest.txt
       run: git add latest.txt
     - name: Git commit
