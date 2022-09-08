@@ -11,26 +11,20 @@ jobs:
     outputs:
       latest: ${{ env.KUBECTL_VERSION }}
       tags: ${{ env.TAGS }}
+      diff: ${{ steps.check-diff.outcome }}
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2.4.2
     - name: Get latest stable version of Kubernetes
-      # run: |
-      #   curl -L -s -O https://dl.k8s.io/release/stable.txt
-      #   echo "KUBECTL_VERSION=$(cat stable.txt)" >> $GITHUB_ENV
-      run: echo "KUBECTL_VERSION=v1.24.10" >> $GITHUB_ENV
-    - uses: github-actions-tools/gh-list-releases@main
-      id: list-releases
-    - name: List tags
-      id: list-tags
-      run: |
-        git fetch --all --tags
-        echo 'TAGS<<EOF' >> $GITHUB_ENV
-        git tag >> $GITHUB_ENV
-        echo 'EOF' >> $GITHUB_ENV
-    - name: Echo TAGS
-      run: echo "${{ env.TAGS }}"
+      # run: curl -L -s -o version.txt https://dl.k8s.io/release/stable.txt
+      run: echo "v1.24.10" > version.txt
+    - name: Check for differences in git repo (aka a new version of kubectl)
+      id: check-diff
+      run: git diff --quiet
+      continue-on-error: true
+    - name: Echo diff
+      run: echo "${{ steps.check-diff.outcome }}"
   
   commit-new-version:
     needs: [get-stable-version]
