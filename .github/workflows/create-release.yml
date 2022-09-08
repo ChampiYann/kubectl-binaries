@@ -37,12 +37,14 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+    - name: Checkout
+      uses: actions/checkout@v2.4.2
     - name: Create latest.txt
       run: echo "${{ needs.get-stable-version.outputs.latest }}" > latest.txt
     - name: Set git credentials
       run: |
-        git config user.email "${GITHUB_ACTOR}"
-        git config user.name "${GITHUB_ACTOR}"
+        git config user.email "${{ github.actor }}@github.com"
+        git config user.name "${{ github.actor }}"
     - name: Git add latest.txt
       run: git add latest.txt
     - name: Git commit
