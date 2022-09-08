@@ -1,4 +1,4 @@
-name: Monitor kubectl reposiyort for new versions
+name: Monitor kubectl repository for new versions
 
 on:
   schedule:
