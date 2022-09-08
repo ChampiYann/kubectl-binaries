@@ -40,6 +40,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2.4.2
+      with:
+        token: ${{ secrets.PUSH_TOKEN }}
     - name: Download version.txt
       uses: actions/download-artifact@v3
       with:
@@ -57,8 +59,6 @@ jobs:
     - name: Tag commit
       run: git tag ${{ env.VERSION_NUMBER }}
     - name: Push
-      env:
-        GITHUB_TOKEN: ${{ secrets.PUSH_TOKEN }}
       run: |
         git push
         git push origin ${{ env.VERSION_NUMBER }}
