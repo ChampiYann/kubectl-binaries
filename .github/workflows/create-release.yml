@@ -28,8 +28,12 @@ jobs:
     - name: Get kubectl version
       id: kubectl-version
       run: echo "KUBECTL_VERSION=$(kubectl version --client -o yaml | grep -Po "(?<=gitVersion..).*")" >> $GITHUB_ENV
+    - name: Get kubectl version
+      run: echo "KUBECTL_VERSION2=$(kubectl version --client -o json)" >> $GITHUB_ENV
     - name: Send greeting
       run: echo "Hello ${{ env.KUBECTL_VERSION }}"
+    - name: Send greeting
+      run: echo "Hello ${{ env.KUBECTL_VERSION2.clientVersion.gitVersion }}"
     - name: Automatic Releases
       # You may pin to the exact commit or the version.
       # uses: marvinpinto/action-automatic-releases@919008cf3f741b179569b7a6fb4d8860689ab7f0
