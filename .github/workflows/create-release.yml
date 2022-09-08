@@ -1,70 +1,23 @@
-# This is a basic workflow that is manually triggered
-
 name: Download and release latest version of kubectl
 
-# Controls when the action will run. Workflow runs when manually triggered using the UI
-# or API.
 on:
-  schedule:
-  - cron: "0 2 * * 1-5"
+  push:
+    tags:
+    - v*
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "greet"
-  get-stable-version:
-    # The type of runner that the job will run on
+  download-and-release:
     runs-on: ubuntu-latest
-    outputs:
-      latest: ${{ env.KUBECTL_VERSION }}
-      releases: ${{ steps.list-releases.outputs.releases }}
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-    # Runs a single command using the runners shell
-    - name: Get latest stable version of Kubernetes
-      # run: |
-      #   curl -L -s -O https://dl.k8s.io/release/stable.txt
-      #   echo "KUBECTL_VERSION=$(cat stable.txt)" >> $GITHUB_ENV
-      run: echo "KUBECTL_VERSION=v1.24.10" >> $GITHUB_ENV
-    - uses: github-actions-tools/gh-list-releases@main
-      id: list-releases
-  
-  commit-new-version:
-    needs: [get-stable-version]
-    if: ${{ !contains(needs.get-stable-version.outputs.releases,needs.get-stable-version.outputs.latest) }}
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - name: Checkout
       uses: actions/checkout@v2.4.2
-    - name: Create latest.txt
-      run: echo "${{ needs.get-stable-version.outputs.latest }}" > latest.txt
-    - name: Set git credentials
-      run: |
-        git config user.email "${{ github.actor }}@github.com"
-        git config user.name "${{ github.actor }}"
-    - name: Git add latest.txt
-      run: git add latest.txt
-    - name: Git commit
-      run: git commit -m "Relese new version ${{ needs.get-stable-version.outputs.latest }}"
-    - name: Tag commit
-      run: git tag ${{ needs.get-stable-version.outputs.latest }}
-    - name: Push
-      run: |
-        git push
-        git push origin ${{ needs.get-stable-version.outputs.latest }}
-
-
-  download-and-release:
-    needs: [commit-new-version,get-stable-version]
-    runs-on: ubuntu-latest
-    steps:
+    - name: Get version to download and release
+      run: echo "VERSION_NUMBER=$(cat version.txt)" >> $GITHUB_ENV
     - name: Download linux versions of kubectl
-      run: curl -L -o "kubectl_linux_#1" "https://dl.k8s.io/release/v1.25.0/bin/linux/{arm,arm64,amd64,386,ppc64le,s390x}/kubectl"
+      run: curl -L -o "kubectl_linux_#1" "https://dl.k8s.io/release/${{ env.VERSION_NUMBER }}/bin/linux/{arm,arm64,amd64,386,ppc64le,s390x}/kubectl"
     - name: Download macOS versions of kubectl
-      run: curl -L -o "kubectl_darwin_#1" "https://dl.k8s.io/release/v1.25.0/bin/darwin/{arm64,amd64}/kubectl"
+      run: curl -L -o "kubectl_darwin_#1" "https://dl.k8s.io/release/${{ env.VERSION_NUMBER }}/bin/darwin/{arm64,amd64}/kubectl"
     - name: Automatic Releases
       # You may pin to the exact commit or the version.
       # uses: marvinpinto/action-automatic-releases@919008cf3f741b179569b7a6fb4d8860689ab7f0
@@ -78,6 +31,6 @@ jobs:
         # Should this release be marked as a pre-release?
         prerelease: false
         # Release title (for automatic releases)
-        title: ${{ needs.get-stable-version.outputs.latest }}
+        title: ${{ env.VERSION_NUMBER }}
         # Assets to upload to the release
         files: kubectl_*
