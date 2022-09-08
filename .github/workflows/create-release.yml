@@ -15,7 +15,9 @@ jobs:
   get-stable-version:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
+    outputs:
+      latest: ${{ env.KUBECTL_VERSION }}
+      releases: ${{ steps.list-releases.outputs.releases }}
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Runs a single command using the runners shell
@@ -29,7 +31,7 @@ jobs:
   
   commit-new-version:
     needs: get-stable-version
-    if: ${{ !contains(jobs.get-stable-version.steps.list-releases.outputs.releases,jobs.get-stable-version.env.KUBECTL_VERSION) }}
+    if: ${{ !contains(jobs.get-stable-version.outputs.releases,jobs.get-stable-version.outputs.latest) }}
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
