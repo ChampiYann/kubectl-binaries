@@ -26,9 +26,11 @@ jobs:
       id: list-tags
       run: |
         git fetch --all --tags
-        echo "::set-output name=tags::$(git tag)"
+        echo 'TAGS<<EOF' >> $GITHUB_ENV
+        git tag >> $GITHUB_ENV
+        echo 'EOF' >> $GITHUB_ENV
     - name: Echo TAGS
-      run: echo "${{ steps.list-tags.outputs.tags }}"
+      run: echo "${{ env.TAGS }}"
   
   commit-new-version:
     needs: [get-stable-version]
