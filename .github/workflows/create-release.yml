@@ -27,7 +27,7 @@ jobs:
         version: latest
     - name: Get kubectl version
       id: kubectl-version
-      run: kubectl version --client -o yaml | grep -Po "(?<=gitVersion: ).*"
+      run: kubectl version --client -o yaml | grep -Po "(?<=gitVersion..).*"
     - name: Send greeting
       run: echo "Hello ${{ steps.kubectl-version.outputs }}"
     - name: Automatic Releases
