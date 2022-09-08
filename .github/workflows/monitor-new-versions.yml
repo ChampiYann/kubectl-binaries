@@ -17,8 +17,8 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2.4.2
     - name: Get latest stable version of Kubernetes
-      # run: curl -L -s -o version.txt https://dl.k8s.io/release/stable.txt
-      run: echo "v1.24.10" > version.txt
+      run: curl -L -s -o version.txt https://dl.k8s.io/release/stable.txt
+      # run: echo "v1.24.10" > version.txt
     - name: Check for differences in git repo (aka a new version of kubectl)
       id: check-diff
       run: git diff --quiet
