@@ -9,8 +9,6 @@ jobs:
   get-stable-version:
     runs-on: ubuntu-latest
     outputs:
-      latest: ${{ env.KUBECTL_VERSION }}
-      tags: ${{ env.TAGS }}
       diff: ${{ steps.check-diff.outcome }}
 
     steps:

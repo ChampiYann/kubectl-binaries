@@ -25,7 +25,6 @@ jobs:
       with:
         # GitHub secret token
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        automatic_release_tag: "latest"
         # Should this release be marked as a draft?
         draft: false
         # Should this release be marked as a pre-release?
@@ -33,4 +32,4 @@ jobs:
         # Release title (for automatic releases)
         title: ${{ env.VERSION_NUMBER }}
         # Assets to upload to the release
-        files: kubectl_*
+        files: kubectl*
