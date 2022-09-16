@@ -15,9 +15,11 @@ jobs:
     - name: Get version to download and release
       run: echo "VERSION_NUMBER=$(cat version.txt)" >> $GITHUB_ENV
     - name: Download linux versions of kubectl
-      run: curl -L -o "kubectl_linux_#1" "https://dl.k8s.io/release/${{ env.VERSION_NUMBER }}/bin/linux/{arm,arm64,amd64,386,ppc64le,s390x}/kubectl"
+      run: curl -L --create-dirs -o "kubectl-linux-#1/kubectl" "https://dl.k8s.io/release/${{ env.VERSION_NUMBER }}/bin/linux/{arm,arm64,amd64,386,ppc64le,s390x}/kubectl"
     - name: Download macOS versions of kubectl
-      run: curl -L -o "kubectl_darwin_#1" "https://dl.k8s.io/release/${{ env.VERSION_NUMBER }}/bin/darwin/{arm64,amd64}/kubectl"
+      run: curl -L --create-dirs -o "kubectl-darwin-#1/kubectl" "https://dl.k8s.io/release/${{ env.VERSION_NUMBER }}/bin/darwin/{arm64,amd64}/kubectl"
+    - name: Put binaries in a tarball
+      run: find . -maxdepth 1 -mindepth 1 -type d -exec tar -czf {}.tar.gz -C {} . \;
     - name: Automatic Releases
       # You may pin to the exact commit or the version.
       # uses: marvinpinto/action-automatic-releases@919008cf3f741b179569b7a6fb4d8860689ab7f0
@@ -32,4 +34,4 @@ jobs:
         # Release title (for automatic releases)
         title: ${{ env.VERSION_NUMBER }}
         # Assets to upload to the release
-        files: kubectl*
+        files: *.tar.gz
