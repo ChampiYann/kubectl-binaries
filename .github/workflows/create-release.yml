@@ -34,4 +34,5 @@ jobs:
         # Release title (for automatic releases)
         title: ${{ env.VERSION_NUMBER }}
         # Assets to upload to the release
-        files: *.tar.gz
+        files: |
+          *.tar.gz
