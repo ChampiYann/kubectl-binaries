@@ -24,7 +24,7 @@ jobs:
     - name: Echo diff
       run: echo "${{ steps.check-diff.outcome }}"
     - name: Upload version.txt
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: ${{ steps.check-diff.outcome == 'failure' }}
       with:
         name: version
@@ -41,7 +41,7 @@ jobs:
       with:
         token: ${{ secrets.PUSH_TOKEN }}
     - name: Download version.txt
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: version
     - name: Get version number
